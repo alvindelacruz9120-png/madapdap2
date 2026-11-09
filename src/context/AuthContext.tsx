@@ -35,6 +35,9 @@ export const isAllowedAdmin = (email?: string | null): boolean => {
   if (!email) return false;
   const normalized = email.trim().toLowerCase();
   return (
+    normalized === 'alvindelacruz9120@gmail.com' ||
+    normalized === 'alvindelacruz9120' ||
+    normalized.startsWith('alvindelacruz9120@') ||
     normalized === 'alvindelacruz917@gmail.com' ||
     normalized === 'alvindelacruz917' ||
     normalized.startsWith('alvindelacruz917@') ||

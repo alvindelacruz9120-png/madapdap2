@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
-    "build": "vite build && if [ -z \"$VERCEL\" ]; then rm -rf dist .aistudio public/assets bun.lock; fi",
+    "build": "vite build && if [ -z \"$VERCEL\" ]; then rm -rf dist .aistudio public/assets src/assets bun.lock; fi",
     "preview": "vite preview",
     "start": "node server.ts",
     "clean": "rm -rf dist server.js",

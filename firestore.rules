@@ -1,0 +1,113 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global default-deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isBootstrappedAdmin() {
+      return isSignedIn() &&
+        (request.auth.token.email.lower() == "alvindelacruz917@gmail.com" ||
+         request.auth.token.email.lower() == "alvin.outsourced@gmail.com" ||
+         request.auth.token.email.lower().matches('^alvindelacruz917@.*') ||
+         request.auth.token.email.lower().matches('^alvin.outsourced@.*'));
+    }
+
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        isBootstrappedAdmin() ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         getUserData().role == "ADMIN" &&
+         getUserData().status == "ACTIVE")
+      );
+    }
+
+    function isGuard() {
+      return isSignedIn() && (
+        isAdmin() ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         getUserData().role == "GUARD" &&
+         getUserData().status == "ACTIVE")
+      );
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128;
+    }
+
+    // Students: readable for student portal, gate verification & badge scan; writable by Admin or scoped password update
+    match /students/{studentDocId} {
+      allow get, list: if true;
+      allow create, delete: if isAdmin() && isValidId(studentDocId);
+      allow update: if (isAdmin() && isValidId(studentDocId)) ||
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['portalPasswordHash', 'passwordResetRequired', 'updatedAt']);
+    }
+
+    // Guardians: readable by Guards and Admins, writable by Admin
+    match /guardians/{guardianDocId} {
+      allow get, list: if isSignedIn() && (isAdmin() || isGuard());
+      allow create, update, delete: if isAdmin() && isValidId(guardianDocId);
+    }
+
+    // Users: self and admin profile management
+    match /users/{userId} {
+      allow get: if isSignedIn() && (request.auth.uid == userId || isAdmin() || isGuard());
+      allow list: if isSignedIn() && isAdmin();
+      allow create: if isSignedIn() && (
+        isAdmin() ||
+        (request.auth.uid == userId && (
+          // If bootstrapped admin is self-registering
+          (isBootstrappedAdmin() && request.resource.data.role == "ADMIN") ||
+          // Standard self-register
+          request.resource.data.role in ["GUARD", "ADMIN", "STUDENT"]
+        ))
+      );
+      allow update: if isSignedIn() && (isAdmin() || request.auth.uid == userId);
+      allow delete: if isAdmin();
+    }
+
+    // Attendance Daily Summary: readable for student portal & admin/guard; writable by Guards and Admins
+    match /attendance/{attendanceDocId} {
+      allow get, list: if true;
+      allow create, update: if isSignedIn() && (isAdmin() || isGuard()) && isValidId(attendanceDocId);
+      allow delete: if isAdmin();
+    }
+
+    // Attendance Events: readable for student portal & gate history; writable by Guards and Admins
+    match /attendance_events/{eventDocId} {
+      allow get, list: if true;
+      allow create, update: if isSignedIn() && (isAdmin() || isGuard()) && isValidId(eventDocId);
+      allow update, delete: if isAdmin();
+    }
+
+    // Email logs: audit records for sent parent alerts
+    match /email_logs/{logDocId} {
+      allow get, list: if isSignedIn() && (isAdmin() || isGuard());
+      allow create: if isSignedIn() && (isAdmin() || isGuard()) && isValidId(logDocId);
+      allow update, delete: if isAdmin();
+    }
+
+    // School Settings: public read for gate timetable and branding; writable by Admin
+    match /school_settings/{settingsId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Audit logs: immutable audit trail
+    match /audit_logs/{auditId} {
+      allow get, list: if isSignedIn() && isAdmin();
+      allow create: if isSignedIn() && (isAdmin() || isGuard());
+      allow update, delete: if false; // Immutable audit log
+    }
+  }
+}

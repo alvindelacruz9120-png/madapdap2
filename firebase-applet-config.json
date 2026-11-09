@@ -1,0 +1,12 @@
+{
+  "projectId": "madapdapattendance",
+  "appId": "1:924808292176:web:047440db565a4531842e55",
+  "apiKey": "AIzaSyARrQ1-lgWFNtEKYoMLbQo4DtSgpyeiyT4",
+  "authDomain": "madapdapattendance.firebaseapp.com",
+  "firestoreDatabaseId": "(default)",
+  "storageBucket": "madapdapattendance.firebasestorage.app",
+  "messagingSenderId": "924808292176",
+  "measurementId": "G-N8VYRVHVYL",
+  "oAuthClientId": "",
+  "recaptchaSiteKey": ""
+}

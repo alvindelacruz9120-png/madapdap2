@@ -1,0 +1,161 @@
+{
+  "entities": {
+    "Student": {
+      "title": "Student",
+      "description": "Student enrolled in the school with cryptographic QR credentials",
+      "type": "object",
+      "properties": {
+        "studentId": { "type": "string", "maxLength": 64, "description": "School assigned student ID" },
+        "firstName": { "type": "string", "maxLength": 100, "description": "Student first name" },
+        "middleName": { "type": "string", "maxLength": 100, "description": "Student middle name" },
+        "lastName": { "type": "string", "maxLength": 100, "description": "Student last name" },
+        "gradeLevel": { "type": "string", "maxLength": 50, "description": "Grade level" },
+        "section": { "type": "string", "maxLength": 50, "description": "Class section" },
+        "status": { "type": "string", "enum": ["ACTIVE", "INACTIVE"], "description": "Enrollment status" },
+        "qrTokenHash": { "type": "string", "maxLength": 128, "description": "SHA-256 hash of student QR token" },
+        "guardianIds": { "type": "array", "description": "Associated guardian IDs" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "description": "Last update timestamp" }
+      },
+      "required": ["studentId", "firstName", "lastName", "gradeLevel", "section", "status", "qrTokenHash", "guardianIds"]
+    },
+    "Guardian": {
+      "title": "Guardian",
+      "description": "Parent or guardian linked to students for automated email notifications",
+      "type": "object",
+      "properties": {
+        "guardianId": { "type": "string", "maxLength": 64, "description": "Unique identifier" },
+        "fullName": { "type": "string", "maxLength": 150, "description": "Parent full name" },
+        "email": { "type": "string", "maxLength": 150, "description": "Parent email address" },
+        "studentIds": { "type": "array", "description": "List of student IDs linked to this guardian" },
+        "emailVerified": { "type": "boolean", "description": "Whether parent email is verified" },
+        "notificationsEnabled": { "type": "boolean", "description": "Whether email alerts are enabled" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["guardianId", "fullName", "email", "studentIds", "notificationsEnabled"]
+    },
+    "User": {
+      "title": "User",
+      "description": "System administrator or guard account",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128, "description": "Firebase Auth UID" },
+        "fullName": { "type": "string", "maxLength": 150, "description": "User full name" },
+        "email": { "type": "string", "maxLength": 150, "description": "User email address" },
+        "role": { "type": "string", "enum": ["ADMIN", "GUARD"], "description": "System role" },
+        "status": { "type": "string", "enum": ["ACTIVE", "INACTIVE"], "description": "Account status" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["uid", "fullName", "email", "role", "status"]
+    },
+    "Attendance": {
+      "title": "Attendance",
+      "description": "Daily aggregated attendance status for a student",
+      "type": "object",
+      "properties": {
+        "studentId": { "type": "string", "maxLength": 64, "description": "Student ID" },
+        "date": { "type": "string", "maxLength": 10, "description": "ISO date YYYY-MM-DD" },
+        "status": { "type": "string", "enum": ["PRESENT", "LATE", "ABSENT"], "description": "Daily status" },
+        "firstEntryAt": { "type": "string", "description": "First entry timestamp ISO" },
+        "lastExitAt": { "type": "string", "description": "Latest exit timestamp ISO" },
+        "entryCount": { "type": "number", "description": "Total entry events count" },
+        "exitCount": { "type": "number", "description": "Total exit events count" }
+      },
+      "required": ["studentId", "date", "status", "entryCount", "exitCount"]
+    },
+    "AttendanceEvent": {
+      "title": "AttendanceEvent",
+      "description": "Individual scan event at gate",
+      "type": "object",
+      "properties": {
+        "eventId": { "type": "string", "maxLength": 64, "description": "Unique event ID" },
+        "studentId": { "type": "string", "maxLength": 64, "description": "Student ID" },
+        "eventType": { "type": "string", "enum": ["ENTRY", "EXIT"], "description": "Gate event direction" },
+        "timestamp": { "type": "string", "description": "Exact ISO timestamp" },
+        "guardId": { "type": "string", "maxLength": 128, "description": "Guard UID who scanned" },
+        "date": { "type": "string", "maxLength": 10, "description": "Date YYYY-MM-DD" },
+        "status": { "type": "string", "enum": ["PRESENT", "LATE", "N/A"], "description": "Status recorded" },
+        "idempotencyKey": { "type": "string", "maxLength": 128, "description": "Scan deduplication key" }
+      },
+      "required": ["eventId", "studentId", "eventType", "timestamp", "guardId", "date", "status", "idempotencyKey"]
+    },
+    "EmailLog": {
+      "title": "EmailLog",
+      "description": "Audit log for parent email notifications sent via Resend",
+      "type": "object",
+      "properties": {
+        "eventId": { "type": "string", "maxLength": 64, "description": "Associated attendance event ID" },
+        "studentId": { "type": "string", "maxLength": 64, "description": "Student ID" },
+        "recipient": { "type": "string", "maxLength": 150, "description": "Guardian email recipient" },
+        "eventType": { "type": "string", "enum": ["ENTRY", "EXIT"], "description": "Notification type" },
+        "deliveryStatus": { "type": "string", "enum": ["PENDING", "SENT", "FAILED"], "description": "Delivery status" },
+        "providerMessageId": { "type": "string", "maxLength": 128, "description": "Resend ID or reference" },
+        "sentAt": { "type": "string", "description": "Sent timestamp" },
+        "errorMessage": { "type": "string", "maxLength": 500, "description": "Error details if failed" }
+      },
+      "required": ["eventId", "studentId", "recipient", "eventType", "deliveryStatus", "sentAt"]
+    },
+    "SchoolSettings": {
+      "title": "SchoolSettings",
+      "description": "Global school configuration and schedules",
+      "type": "object",
+      "properties": {
+        "schoolName": { "type": "string", "maxLength": 200, "description": "Official school name" },
+        "schoolLogo": { "type": "string", "maxLength": 1000, "description": "Logo URL or base64 data" },
+        "timezone": { "type": "string", "maxLength": 50, "description": "IANA timezone" },
+        "openingTime": { "type": "string", "maxLength": 5, "description": "HH:MM format 24h" },
+        "lateCutoff": { "type": "string", "maxLength": 5, "description": "HH:MM late threshold" },
+        "closingTime": { "type": "string", "maxLength": 5, "description": "HH:MM dismissal time" },
+        "schoolDays": { "type": "array", "description": "Active days e.g. Mon-Fri" }
+      },
+      "required": ["schoolName", "timezone", "openingTime", "lateCutoff", "closingTime", "schoolDays"]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "Administrative actions audit log",
+      "type": "object",
+      "properties": {
+        "actorId": { "type": "string", "maxLength": 128, "description": "UID of admin/actor" },
+        "action": { "type": "string", "maxLength": 100, "description": "Action performed" },
+        "targetId": { "type": "string", "maxLength": 128, "description": "Target entity ID" },
+        "details": { "type": "string", "maxLength": 1000, "description": "Details of the change" },
+        "timestamp": { "type": "string", "description": "Log timestamp" }
+      },
+      "required": ["actorId", "action", "targetId", "details", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/students/{studentDocId}": {
+      "schema": { "$ref": "Student" },
+      "description": "Student master database collection"
+    },
+    "/guardians/{guardianDocId}": {
+      "schema": { "$ref": "Guardian" },
+      "description": "Registered guardians for automated parent notifications"
+    },
+    "/users/{userId}": {
+      "schema": { "$ref": "User" },
+      "description": "User accounts with role assignment"
+    },
+    "/attendance/{attendanceDocId}": {
+      "schema": { "$ref": "Attendance" },
+      "description": "Daily student attendance rollup"
+    },
+    "/attendance_events/{eventDocId}": {
+      "schema": { "$ref": "AttendanceEvent" },
+      "description": "Raw scan events recorded at the school gate"
+    },
+    "/email_logs/{logDocId}": {
+      "schema": { "$ref": "EmailLog" },
+      "description": "Log of sent email notifications to parents"
+    },
+    "/school_settings/{settingsId}": {
+      "schema": { "$ref": "SchoolSettings" },
+      "description": "School operational settings and timetable"
+    },
+    "/audit_logs/{auditId}": {
+      "schema": { "$ref": "AuditLog" },
+      "description": "Audit trail for compliance and security"
+    }
+  }
+}

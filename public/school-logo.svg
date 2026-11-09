@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240">
+  <defs>
+    <linearGradient id="sealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e3a8a" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24" />
+      <stop offset="100%" stop-color="#d97706" />
+    </linearGradient>
+  </defs>
+  <circle cx="120" cy="120" r="114" fill="url(#goldGrad)" />
+  <circle cx="120" cy="120" r="106" fill="#ffffff" />
+  <circle cx="120" cy="120" r="98" fill="url(#sealGrad)" />
+  <circle cx="120" cy="120" r="76" fill="none" stroke="#fbbf24" stroke-width="2.5" stroke-dasharray="4 3" />
+  <circle cx="120" cy="120" r="70" fill="#ffffff" />
+  <!-- Sun rays -->
+  <g stroke="#d97706" stroke-width="2.5" stroke-linecap="round">
+    <line x1="120" y1="64" x2="120" y2="76" />
+    <line x1="94" y1="72" x2="101" y2="82" />
+    <line x1="146" y1="72" x2="139" y2="82" />
+    <line x1="78" y1="90" x2="88" y2="96" />
+    <line x1="162" y1="90" x2="152" y2="96" />
+  </g>
+  <!-- Rising Sun -->
+  <path d="M96 106 A24 24 0 0 1 144 106 Z" fill="#f59e0b" />
+  <!-- Open Book of Knowledge -->
+  <path d="M78 112 Q99 105 120 114 Q141 105 162 112 L162 146 Q141 139 120 148 Q99 139 78 146 Z" fill="#1e40af" stroke="#0f172a" stroke-width="2" />
+  <path d="M82 115 Q101 109 120 117 Q139 109 158 115 L158 141 Q139 135 120 143 Q101 135 82 141 Z" fill="#ffffff" />
+  <line x1="120" y1="117" x2="120" y2="143" stroke="#1e40af" stroke-width="2" />
+  <!-- Torch of Excellence -->
+  <rect x="116" y="88" width="8" height="32" rx="2" fill="#b45309" />
+  <path d="M120 68 C111 78 113 86 120 90 C127 86 129 78 120 68 Z" fill="#ef4444" />
+  <path d="M120 73 C115 79 116 84 120 88 C124 84 125 79 120 73 Z" fill="#fbbf24" />
+  <!-- Banner Ribbon -->
+  <rect x="74" y="152" width="92" height="18" rx="4" fill="#fbbf24" stroke="#0f172a" stroke-width="1.5" />
+  <text x="120" y="164" font-family="Arial, sans-serif" font-size="10.5" font-weight="900" fill="#0f172a" text-anchor="middle" letter-spacing="1.5">MaRHS 1995</text>
+  <!-- Outer Ring Text -->
+  <text x="120" y="34" font-family="Arial, sans-serif" font-size="9.5" font-weight="800" fill="#fbbf24" text-anchor="middle" letter-spacing="1.2">MADAPDAP RESETTLEMENT</text>
+  <text x="120" y="213" font-family="Arial, sans-serif" font-size="9" font-weight="800" fill="#ffffff" text-anchor="middle" letter-spacing="1.4">SENIOR HIGH SCHOOL</text>
+</svg>

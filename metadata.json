@@ -1,0 +1,10 @@
+{
+  "name": "QR Student Attendance & Parent Notification System",
+  "description": "Enterprise-grade school attendance management with cryptographic QR student entry/exit tracking, real-time parent email alerts, and administrative dashboard.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
